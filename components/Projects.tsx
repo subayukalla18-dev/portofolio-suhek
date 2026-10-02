@@ -26,6 +26,7 @@ type Project = {
   description: string;
   image: string;
   tech: Tech[];
+  github: string;
 };
 
 const projects: Project[] = [
@@ -36,6 +37,8 @@ const projects: Project[] = [
     description:
       "Web-based internship attendance system with GPS validation, WiFi verification, selfie attendance, and attendance monitoring for administrators.",
     image: "/images/projects/attendance-system.png",
+    github:
+      "https://github.com/subayukalla18-dev/iconnet-internship-attendance",
     tech: [
       {
         name: "React",
@@ -66,6 +69,8 @@ const projects: Project[] = [
     description:
       "Personal portfolio website showcasing projects, technical skills, education, experience, and professional certifications.",
     image: "/images/projects/portfolio.png",
+    github:
+      "https://github.com/subayukalla18-dev/portofolio-suhek",
     tech: [
       {
         name: "Next.js",
@@ -181,11 +186,20 @@ export default function Projects() {
                   ))}
                 </div>
 
-                {/* Action */}
+                {/* GitHub */}
                 <div className="mt-6">
-                  <span className="inline-flex rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/45">
-                    GitHub link coming soon
-                  </span>
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/github inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/50 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
+                  >
+                    <span>VIEW ON GITHUB</span>
+
+                    <span className="transition-transform duration-300 group-hover/github:translate-x-0.5 group-hover/github:-translate-y-0.5">
+                      ↗
+                    </span>
+                  </a>
                 </div>
               </div>
             </article>
