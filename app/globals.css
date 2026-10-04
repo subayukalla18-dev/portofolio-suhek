@@ -71,3 +71,10 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: #555555;
 }
+
+/* Hide email arrow on iPhone/iOS only */
+@supports (-webkit-touch-callout: none) {
+  .email-arrow {
+    display: none;
+  }
+}

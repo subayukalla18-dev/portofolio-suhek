@@ -63,9 +63,9 @@ export default function Contact() {
                 </div>
               </div>
 
-              <span className="text-lg text-white/50 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5">
-                ↗
-              </span>
+             <span className="email-arrow text-lg text-white/50 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5">
+  ↗
+</span>
             </a>
           </Reveal>
 
