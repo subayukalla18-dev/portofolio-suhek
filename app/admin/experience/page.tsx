@@ -21,6 +21,7 @@ export default function ExperienceAdminPage() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const [form, setForm] = useState({
     company: "",
@@ -151,6 +152,8 @@ export default function ExperienceAdminPage() {
 
       await fetchExperiences();
 
+      setShowAddForm(false);
+
       alert("Experience berhasil ditambahkan.");
     } catch (error) {
       console.error(error);
@@ -247,172 +250,194 @@ export default function ExperienceAdminPage() {
             </p>
           </div>
 
-          <div className="rounded-full border border-white/10 px-4 py-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/50">
-              {experiences.length} Experiences
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="rounded-full border border-white/10 px-4 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/50">
+                {experiences.length} Experiences
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAddForm((prev) => !prev)}
+              className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90"
+            >
+              {showAddForm ? "CLOSE ×" : "+ ADD EXPERIENCE"}
+            </button>
           </div>
         </div>
 
         {/* CREATE */}
-        <section className="mt-8 rounded-2xl border border-white/10 bg-[#080808]/70 p-6">
-          <div className="mb-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
-              Create
-            </p>
+        {showAddForm && (
+          <section className="mt-8 rounded-2xl border border-white/10 bg-[#080808]/70 p-6">
+            <div className="mb-6">
+              <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
+                Create
+              </p>
 
-            <h2 className="mt-2 text-xl font-semibold text-white">
-              Add Experience
-            </h2>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Company
-                </label>
-
-                <input
-                  name="company"
-                  value={form.company}
-                  onChange={handleChange}
-                  placeholder="PLN Icon Plus"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Position
-                </label>
-
-                <input
-                  name="position"
-                  value={form.position}
-                  onChange={handleChange}
-                  placeholder="IT Support Intern"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
+              <h2 className="mt-2 text-xl font-semibold text-white">
+                Add Experience
+              </h2>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Type
-                </label>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Company
+                  </label>
 
-                <input
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  placeholder="Internship"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
+                  <input
+                    name="company"
+                    value={form.company}
+                    onChange={handleChange}
+                    placeholder="PLN Icon Plus"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Position
+                  </label>
+
+                  <input
+                    name="position"
+                    value={form.position}
+                    onChange={handleChange}
+                    placeholder="IT Support Intern"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Type
+                  </label>
+
+                  <input
+                    name="type"
+                    value={form.type}
+                    onChange={handleChange}
+                    placeholder="Internship"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Period
+                  </label>
+
+                  <input
+                    name="period"
+                    value={form.period}
+                    onChange={handleChange}
+                    placeholder="MAR 2 — JUL 1, 2026"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="mb-2 block text-xs text-white/50">
-                  Period
+                  Description
                 </label>
 
-                <input
-                  name="period"
-                  value={form.period}
+                <textarea
+                  name="description"
+                  value={form.description}
                   onChange={handleChange}
-                  placeholder="MAR 2 — JUL 1, 2026"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-xs text-white/50">
-                Description
-              </label>
-
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                rows={5}
-                placeholder="Describe your responsibilities and experience..."
-                className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-              />
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Logo URL
-                </label>
-
-                <input
-                  name="logo_url"
-                  value={form.logo_url}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  rows={5}
+                  placeholder="Describe your responsibilities and experience..."
+                  className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
                 />
               </div>
 
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Upload Logo
-                </label>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Logo URL
+                  </label>
 
-                <input
-                  id="experience-logo"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setLogoFile(e.target.files?.[0] ?? null)
-                  }
-                  className="block w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs text-white/50 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-xs file:text-white"
-                />
+                  <input
+                    name="logo_url"
+                    value={form.logo_url}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Upload Logo
+                  </label>
+
+                  <input
+                    id="experience-logo"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      setLogoFile(e.target.files?.[0] ?? null)
+                    }
+                    className="block w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs text-white/50 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-xs file:text-white"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Sort Order
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Sort Order
+                  </label>
+
+                  <input
+                    name="sort_order"
+                    type="number"
+                    value={form.sort_order}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-white/25"
+                  />
+                </div>
+
+                <label className="flex items-center gap-3 self-end rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+                  <input
+                    name="is_published"
+                    type="checkbox"
+                    checked={form.is_published}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-white"
+                  />
+
+                  <span className="text-xs text-white/60">
+                    Publish immediately
+                  </span>
                 </label>
-
-                <input
-                  name="sort_order"
-                  type="number"
-                  value={form.sort_order}
-                  onChange={handleChange}
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-white/25"
-                />
               </div>
 
-              <label className="flex items-center gap-3 self-end rounded-xl border border-white/10 bg-black/30 px-4 py-3">
-                <input
-                  name="is_published"
-                  type="checkbox"
-                  checked={form.is_published}
-                  onChange={handleChange}
-                  className="h-4 w-4 accent-white"
-                />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {saving ? "SAVING..." : "ADD EXPERIENCE →"}
+                </button>
 
-                <span className="text-xs text-white/60">
-                  Publish immediately
-                </span>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {saving ? "SAVING..." : "ADD EXPERIENCE →"}
-            </button>
-          </form>
-        </section>
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="rounded-full border border-white/10 px-5 py-2.5 text-xs text-white/50 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
 
         {/* LIST */}
         <section className="mt-8">

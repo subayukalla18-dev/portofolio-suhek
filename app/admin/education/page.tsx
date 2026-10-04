@@ -21,6 +21,8 @@ export default function EducationAdminPage() {
 
   const [education, setEducation] = useState<Education[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const [form, setForm] = useState({
     institution: "",
@@ -34,7 +36,6 @@ export default function EducationAdminPage() {
   });
 
   const [file, setFile] = useState<File | null>(null);
-  const [saving, setSaving] = useState(false);
 
   async function loadEducation() {
     setLoading(true);
@@ -136,7 +137,19 @@ export default function EducationAdminPage() {
 
       setFile(null);
 
+      const fileInput = document.querySelector(
+        'input[type="file"]',
+      ) as HTMLInputElement | null;
+
+      if (fileInput) {
+        fileInput.value = "";
+      }
+
       await loadEducation();
+
+      setShowAddForm(false);
+
+      alert("Education berhasil ditambahkan.");
     } finally {
       setSaving(false);
     }
@@ -181,195 +194,277 @@ export default function EducationAdminPage() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-12">
+    <main className="min-h-screen px-6 py-10">
       <div className="mx-auto max-w-6xl">
-
-        <Link
-          href="/admin"
-          className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35 transition hover:text-white"
-        >
-          ← BACK TO DASHBOARD
-        </Link>
-
-        <div className="mt-10 flex items-end justify-between gap-6 border-b border-white/10 pb-7">
+        {/* HEADER */}
+        <div className="flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">
+            <Link
+              href="/admin"
+              className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30 transition hover:text-white"
+            >
+              ← Back to Dashboard
+            </Link>
+
+            <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">
               Content Management
             </p>
 
-            <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-white">
+            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em] text-white">
               Education
             </h1>
 
-            <p className="mt-2 text-sm text-white/35">
+            <p className="mt-2 text-sm text-white/40">
               Manage your education history.
             </p>
           </div>
 
-          <div className="rounded-full border border-white/10 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.15em] text-white/45">
-            {education.length} ITEMS
+          <div className="flex items-center gap-3">
+            <div className="rounded-full border border-white/10 px-4 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/50">
+                {education.length} Education
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAddForm((prev) => !prev)}
+              className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90"
+            >
+              {showAddForm ? "CLOSE ×" : "+ ADD EDUCATION"}
+            </button>
           </div>
         </div>
 
         {/* CREATE */}
-        <section className="mt-10 rounded-3xl border border-white/10 bg-[#080808]/70 p-6 sm:p-8">
-          <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
-            Create
-          </p>
-
-          <h2 className="mt-3 text-2xl font-semibold text-white">
-            Add Education
-          </h2>
-
-          <form
-            onSubmit={handleCreate}
-            className="mt-8 grid gap-6 md:grid-cols-2"
-          >
-            <input
-              placeholder="Institution"
-              value={form.institution}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  institution: e.target.value,
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
-            />
-
-            <input
-              placeholder="Degree"
-              value={form.degree}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  degree: e.target.value,
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
-            />
-
-            <input
-              placeholder="Field"
-              value={form.field}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  field: e.target.value,
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
-            />
-
-            <input
-              placeholder="Period"
-              value={form.period}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  period: e.target.value,
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
-            />
-
-            <input
-              placeholder="Status"
-              value={form.status}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  status: e.target.value,
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
-            />
-
-            <input
-              placeholder="Logo URL"
-              value={form.logo_url}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  logo_url: e.target.value,
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
-            />
-
-            <div className="md:col-span-2">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  setFile(e.target.files?.[0] ?? null)
-                }
-                className="w-full rounded-2xl border border-white/10 bg-black p-3 text-sm text-white/50"
-              />
-
-              <p className="mt-2 text-[11px] text-white/25">
-                Upload logo akan menggantikan Logo URL.
+        {showAddForm && (
+          <section className="mt-8 rounded-2xl border border-white/10 bg-[#080808]/70 p-6">
+            <div className="mb-6">
+              <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
+                Create
               </p>
+
+              <h2 className="mt-2 text-xl font-semibold text-white">
+                Add Education
+              </h2>
             </div>
 
-            <input
-              type="number"
-              value={form.sort_order}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  sort_order: Number(e.target.value),
-                })
-              }
-              className="rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white outline-none"
-            />
+            <form
+              onSubmit={handleCreate}
+              className="space-y-5"
+            >
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Institution
+                  </label>
 
-            <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black px-4 py-3 text-sm text-white/50">
-              <input
-                type="checkbox"
-                checked={form.is_published}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    is_published: e.target.checked,
-                  })
-                }
-              />
-              Publish immediately
-            </label>
+                  <input
+                    placeholder="Universitas Teknokrat Indonesia"
+                    value={form.institution}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        institution: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
 
-            <div className="md:col-span-2">
-              <button
-                type="submit"
-                disabled={saving}
-                className="rounded-full bg-white px-6 py-3 text-xs font-medium text-black transition hover:bg-white/90 disabled:opacity-50"
-              >
-                {saving
-                  ? "ADDING..."
-                  : "ADD EDUCATION →"}
-              </button>
-            </div>
-          </form>
-        </section>
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Degree
+                  </label>
+
+                  <input
+                    placeholder="S1"
+                    value={form.degree}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        degree: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Field
+                  </label>
+
+                  <input
+                    placeholder="Informatika"
+                    value={form.field}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        field: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Period
+                  </label>
+
+                  <input
+                    placeholder="2023 — PRESENT"
+                    value={form.period}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        period: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Status
+                  </label>
+
+                  <input
+                    placeholder="Active Student"
+                    value={form.status}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        status: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Logo URL
+                  </label>
+
+                  <input
+                    placeholder="https://..."
+                    value={form.logo_url}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        logo_url: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs text-white/50">
+                  Upload Logo
+                </label>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setFile(e.target.files?.[0] ?? null)
+                  }
+                  className="block w-full rounded-xl border border-white/10 bg-black/30 p-3 text-xs text-white/50 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-xs file:text-white"
+                />
+
+                <p className="mt-2 text-[11px] text-white/25">
+                  Upload logo akan menggantikan Logo URL.
+                </p>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Sort Order
+                  </label>
+
+                  <input
+                    type="number"
+                    value={form.sort_order}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        sort_order: Number(e.target.value),
+                      })
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none focus:border-white/25"
+                  />
+                </div>
+
+                <label className="flex items-center gap-3 self-end rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={form.is_published}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        is_published: e.target.checked,
+                      })
+                    }
+                    className="h-4 w-4 accent-white"
+                  />
+
+                  <span className="text-xs text-white/60">
+                    Publish immediately
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {saving
+                    ? "ADDING..."
+                    : "ADD EDUCATION →"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="rounded-full border border-white/10 px-5 py-2.5 text-xs text-white/50 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
 
         {/* LIST */}
-        <section className="mt-12">
-          <div className="mb-5">
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/35">
+        <section className="mt-8">
+          <div className="mb-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
               Existing Content
             </p>
 
-            <h2 className="mt-3 text-2xl font-semibold text-white">
+            <h2 className="mt-2 text-xl font-semibold text-white">
               All Education
             </h2>
           </div>
 
           {loading ? (
-            <p className="text-sm text-white/35">
+            <div className="rounded-2xl border border-white/10 bg-[#080808]/70 p-8 text-center text-sm text-white/30">
               Loading...
-            </p>
+            </div>
           ) : education.length === 0 ? (
-            <div className="rounded-3xl border border-white/10 p-8 text-sm text-white/35">
+            <div className="rounded-2xl border border-white/10 bg-[#080808]/70 p-8 text-center text-sm text-white/30">
               No education found.
             </div>
           ) : (
@@ -377,97 +472,88 @@ export default function EducationAdminPage() {
               {education.map((item, index) => (
                 <article
                   key={item.id}
-                  className="rounded-3xl border border-white/10 bg-[#080808]/70 p-6 transition hover:border-white/20"
+                  className="rounded-2xl border border-white/10 bg-[#080808]/70 p-5 transition hover:border-white/20"
                 >
-                  <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black">
+                      {item.logo_url ? (
+                        <img
+                          src={item.logo_url}
+                          alt={item.institution}
+                          className="h-full w-full object-contain p-2"
+                        />
+                      ) : (
+                        <span className="font-mono text-[9px] text-white/20">
+                          NO LOGO
+                        </span>
+                      )}
+                    </div>
 
-                    <div className="flex gap-5">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-mono text-[10px] text-white/25">
+                          #{String(index + 1).padStart(2, "0")}
+                        </span>
 
-                      <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black">
-                        {item.logo_url ? (
-                          <img
-                            src={item.logo_url}
-                            alt={item.institution}
-                            className="h-full w-full object-contain p-2"
-                          />
-                        ) : (
-                          <span className="text-[10px] text-white/20">
-                            NO LOGO
-                          </span>
-                        )}
+                        <span
+                          className={`rounded-full border px-2.5 py-1 font-mono text-[9px] uppercase tracking-wider ${
+                            item.is_published
+                              ? "border-emerald-400/20 bg-emerald-400/5 text-emerald-300/70"
+                              : "border-white/10 bg-white/[0.03] text-white/30"
+                          }`}
+                        >
+                          {item.is_published
+                            ? "Published"
+                            : "Hidden"}
+                        </span>
                       </div>
 
-                      <div>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="font-mono text-[10px] text-white/25">
-                            #{String(index + 1).padStart(2, "0")}
-                          </span>
+                      <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.15em] text-white/35">
+                        {item.institution}
+                        {item.period && ` • ${item.period}`}
+                      </p>
 
-                          <span
-                            className={`rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-wider ${
-                              item.is_published
-                                ? "border-emerald-500/30 text-emerald-400"
-                                : "border-white/10 text-white/30"
-                            }`}
-                          >
-                            {item.is_published
-                              ? "PUBLISHED"
-                              : "HIDDEN"}
-                          </span>
-                        </div>
+                      <h3 className="mt-2 text-lg font-semibold text-white">
+                        {item.degree}
+                      </h3>
 
-                        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">
-                          {item.institution}
-                          {item.period && ` · ${item.period}`}
+                      {item.field && (
+                        <p className="mt-1 text-sm text-white/40">
+                          {item.field}
                         </p>
+                      )}
 
-                        <h3 className="mt-3 text-xl font-semibold text-white">
-                          {item.degree}
-                        </h3>
+                      {item.status && (
+                        <p className="mt-1 text-sm text-white/35">
+                          {item.status}
+                        </p>
+                      )}
 
-                        {item.field && (
-                          <p className="mt-2 text-sm text-white/45">
-                            {item.field}
-                          </p>
-                        )}
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        <Link
+                          href={`/admin/education/${item.id}/edit`}
+                          className="rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/50 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+                        >
+                          EDIT
+                        </Link>
 
-                        {item.status && (
-                          <p className="mt-2 text-sm text-white/35">
-                            {item.status}
-                          </p>
-                        )}
+                        <button
+                          onClick={() => togglePublish(item)}
+                          className="rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/50 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+                        >
+                          {item.is_published
+                            ? "UNPUBLISH"
+                            : "PUBLISH"}
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(item)}
+                          className="rounded-full border border-red-400/10 px-3.5 py-1.5 text-[11px] text-red-300/50 transition hover:border-red-400/20 hover:bg-red-400/5 hover:text-red-300"
+                        >
+                          DELETE
+                        </button>
                       </div>
                     </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      <Link
-                        href={`/admin/education/${item.id}/edit`}
-                        className="rounded-full border border-white/10 px-4 py-2 text-[11px] text-white/50 transition hover:border-white/20 hover:text-white"
-                      >
-                        EDIT
-                      </Link>
-
-                      <button
-                        onClick={() =>
-                          togglePublish(item)
-                        }
-                        className="rounded-full border border-white/10 px-4 py-2 text-[11px] text-white/50 transition hover:border-white/20 hover:text-white"
-                      >
-                        {item.is_published
-                          ? "UNPUBLISH"
-                          : "PUBLISH"}
-                      </button>
-
-                      <button
-                        onClick={() =>
-                          handleDelete(item)
-                        }
-                        className="rounded-full border border-red-500/10 px-4 py-2 text-[11px] text-red-400/60 transition hover:border-red-500/30 hover:text-red-400"
-                      >
-                        DELETE
-                      </button>
-                    </div>
-
                   </div>
                 </article>
               ))}

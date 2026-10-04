@@ -21,6 +21,7 @@ const supabase = createClient();
 export default function CertificatesAdminPage() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const [form, setForm] = useState({
     provider: "",
@@ -154,6 +155,8 @@ export default function CertificatesAdminPage() {
 
       await fetchCertificates();
 
+      setShowAddForm(false);
+
       alert("Certificate berhasil ditambahkan.");
     } catch (error) {
       console.error(error);
@@ -203,7 +206,8 @@ export default function CertificatesAdminPage() {
 
     if (certificate.image_url) {
       try {
-        const marker = "/storage/v1/object/public/portfolio-certificates/";
+        const marker =
+          "/storage/v1/object/public/portfolio-certificates/";
 
         if (certificate.image_url.includes(marker)) {
           const filePath = certificate.image_url.split(marker)[1];
@@ -246,189 +250,214 @@ export default function CertificatesAdminPage() {
             </p>
           </div>
 
-          <div className="rounded-full border border-white/10 px-4 py-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/50">
-              {certificates.length} Certificates
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="rounded-full border border-white/10 px-4 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/50">
+                {certificates.length} Certificates
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowAddForm((prev) => !prev)}
+              className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90"
+            >
+              {showAddForm ? "CLOSE ×" : "+ ADD CERTIFICATE"}
+            </button>
           </div>
         </div>
 
         {/* ADD FORM */}
-        <section className="mt-8 rounded-2xl border border-white/10 bg-[#080808]/70 p-6">
-          <div className="mb-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
-              Create
-            </p>
-
-            <h2 className="mt-2 text-xl font-semibold text-white">
-              Add Certificate
-            </h2>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Provider
-                </label>
-
-                <input
-                  name="provider"
-                  value={form.provider}
-                  onChange={handleChange}
-                  placeholder="Digital Talent Scholarship"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Title
-                </label>
-
-                <input
-                  name="title"
-                  value={form.title}
-                  onChange={handleChange}
-                  placeholder="Junior Web Developer"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Category
-                </label>
-
-                <input
-                  name="category"
-                  value={form.category}
-                  onChange={handleChange}
-                  placeholder="Web Development"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Year
-                </label>
-
-                <input
-                  name="year"
-                  type="number"
-                  value={form.year}
-                  onChange={handleChange}
-                  placeholder="2025"
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-xs text-white/50">
-                Detail
-              </label>
-
-              <textarea
-                name="detail"
-                value={form.detail}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Certificate description..."
-                className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-              />
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Image URL
-                </label>
-
-                <input
-                  name="image_url"
-                  value={form.image_url}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs text-white/50">
-                  Certificate URL
-                </label>
-
-                <input
-                  name="certificate_url"
-                  value={form.certificate_url}
-                  onChange={handleChange}
-                  placeholder="https://..."
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-xs text-white/50">
-                Upload Image
-              </label>
-
-              <input
-                id="certificate-image"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-                className="block w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs text-white/50 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-xs file:text-white"
-              />
-
-              <p className="mt-2 text-[11px] text-white/25">
-                Jika upload gambar digunakan, Image URL akan digantikan.
+        {showAddForm && (
+          <section className="mt-8 rounded-2xl border border-white/10 bg-[#080808]/70 p-6">
+            <div className="mb-6">
+              <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
+                Create
               </p>
+
+              <h2 className="mt-2 text-xl font-semibold text-white">
+                Add Certificate
+              </h2>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Provider
+                  </label>
+
+                  <input
+                    name="provider"
+                    value={form.provider}
+                    onChange={handleChange}
+                    placeholder="Digital Talent Scholarship"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Title
+                  </label>
+
+                  <input
+                    name="title"
+                    value={form.title}
+                    onChange={handleChange}
+                    placeholder="Junior Web Developer"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Category
+                  </label>
+
+                  <input
+                    name="category"
+                    value={form.category}
+                    onChange={handleChange}
+                    placeholder="Web Development"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Year
+                  </label>
+
+                  <input
+                    name="year"
+                    type="number"
+                    value={form.year}
+                    onChange={handleChange}
+                    placeholder="2025"
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="mb-2 block text-xs text-white/50">
-                  Sort Order
+                  Detail
                 </label>
 
-                <input
-                  name="sort_order"
-                  type="number"
-                  value={form.sort_order}
+                <textarea
+                  name="detail"
+                  value={form.detail}
                   onChange={handleChange}
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-white/25"
+                  rows={4}
+                  placeholder="Certificate description..."
+                  className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
                 />
               </div>
 
-              <label className="flex items-center gap-3 self-end rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Image URL
+                  </label>
+
+                  <input
+                    name="image_url"
+                    value={form.image_url}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Certificate URL
+                  </label>
+
+                  <input
+                    name="certificate_url"
+                    value={form.certificate_url}
+                    onChange={handleChange}
+                    placeholder="https://..."
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/25"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs text-white/50">
+                  Upload Image
+                </label>
+
                 <input
-                  name="is_published"
-                  type="checkbox"
-                  checked={form.is_published}
-                  onChange={handleChange}
-                  className="h-4 w-4 accent-white"
+                  id="certificate-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setImageFile(e.target.files?.[0] ?? null)
+                  }
+                  className="block w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs text-white/50 file:mr-4 file:rounded-lg file:border-0 file:bg-white/10 file:px-3 file:py-2 file:text-xs file:text-white"
                 />
 
-                <span className="text-xs text-white/60">
-                  Publish immediately
-                </span>
-              </label>
-            </div>
+                <p className="mt-2 text-[11px] text-white/25">
+                  Jika upload gambar digunakan, Image URL akan
+                  digantikan.
+                </p>
+              </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {saving ? "SAVING..." : "ADD CERTIFICATE →"}
-            </button>
-          </form>
-        </section>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-xs text-white/50">
+                    Sort Order
+                  </label>
+
+                  <input
+                    name="sort_order"
+                    type="number"
+                    value={form.sort_order}
+                    onChange={handleChange}
+                    className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-white/25"
+                  />
+                </div>
+
+                <label className="flex items-center gap-3 self-end rounded-xl border border-white/10 bg-black/30 px-4 py-3">
+                  <input
+                    name="is_published"
+                    type="checkbox"
+                    checked={form.is_published}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-white"
+                  />
+
+                  <span className="text-xs text-white/60">
+                    Publish immediately
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-full border border-white/15 bg-white px-5 py-2.5 text-xs font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {saving ? "SAVING..." : "ADD CERTIFICATE →"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="rounded-full border border-white/10 px-5 py-2.5 text-xs text-white/50 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
 
         {/* LIST */}
         <section className="mt-8">
@@ -523,11 +552,15 @@ export default function CertificatesAdminPage() {
                           }
                           className="rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/50 transition hover:border-white/20 hover:bg-white/[0.04] hover:text-white"
                         >
-                          {certificate.is_published ? "UNPUBLISH" : "PUBLISH"}
+                          {certificate.is_published
+                            ? "UNPUBLISH"
+                            : "PUBLISH"}
                         </button>
 
                         <button
-                          onClick={() => deleteCertificate(certificate)}
+                          onClick={() =>
+                            deleteCertificate(certificate)
+                          }
                           className="rounded-full border border-red-400/10 px-3.5 py-1.5 text-[11px] text-red-300/50 transition hover:border-red-400/20 hover:bg-red-400/5 hover:text-red-300"
                         >
                           DELETE
