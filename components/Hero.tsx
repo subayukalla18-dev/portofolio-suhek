@@ -1,9 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const baseProfileImage = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/portfolio-profile/subayu.jpg`;
 
 export default function Hero() {
   const [isActive, setIsActive] = useState(false);
+
+  const [profileImage, setProfileImage] = useState(baseProfileImage);
+
+  useEffect(() => {
+    setProfileImage(`${baseProfileImage}?v=${Date.now()}`);
+  }, []);
 
   return (
     <section
@@ -26,7 +34,7 @@ export default function Hero() {
           </h1>
 
           <p className="mt-6 max-w-[520px] text-sm leading-7 text-white/55 sm:text-[15px]">
-            Hi, I’m{" "}
+            Hi, I&apos;m{" "}
             <span className="text-white">Subayu Kalla</span>.
             An Informatics student and Full Stack Developer focused on
             building clean, functional, and solution-driven web applications.
@@ -72,7 +80,7 @@ export default function Hero() {
               {/* PHOTO */}
               <div className="absolute inset-0">
                 <img
-                  src="/images/profile/subayu.jpg"
+                  src={profileImage}
                   alt="Subayu Kalla"
                   className={`
                     h-full w-full object-cover

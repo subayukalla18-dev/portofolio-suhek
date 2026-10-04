@@ -1,27 +1,39 @@
 import Image from "next/image";
 import Reveal from "@/components/Reveal";
+import { createClient } from "@/lib/supabase/server";
 
-const certificates = [
-  {
-    provider: "Digital Talent Scholarship",
-    level: "2025",
-    title: "Junior Web Developer",
-    category: "Web Development",
-    detail: "Vocational School Graduate Academy · 24 Jam Pelatihan",
-    image: "/images/certificates/junior-web-developer.jpg",
-  },
-  {
-    provider: "Digital Talent Scholarship",
-    level: "2025",
-    title:
-      "Pengantar Mindset Digital 1 : Mengubah Masa Depan Anda Dengan Pola Pikir Digital",
-    category: "Digital Skills",
-    detail: "Micro Skill · 2 Jam Pelatihan",
-    image: "/images/certificates/mindset-digital.jpg",
-  },
-];
+type Certificate = {
+  id: number;
+  provider: string;
+  title: string;
+  category: string;
+  detail: string;
+  image_url: string;
+  certificate_url: string | null;
+  year: number | null;
+};
 
-export default function Certificates() {
+export default async function Certificates() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("certificates")
+    .select(
+      "id, provider, title, category, detail, image_url, certificate_url, year, sort_order",
+    )
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    console.error("FAILED TO FETCH CERTIFICATES");
+    console.error("message:", error.message);
+    console.error("details:", error.details);
+    console.error("hint:", error.hint);
+    console.error("code:", error.code);
+  }
+
+  const certificates: Certificate[] = data ?? [];
+
   return (
     <section
       id="certificates"
@@ -41,7 +53,7 @@ export default function Certificates() {
           </div>
 
           <p className="hidden font-mono text-[11px] uppercase text-white/45 md:block">
-            2025
+            {String(certificates.length).padStart(2, "0")} CERTIFICATES
           </p>
         </div>
       </Reveal>
@@ -49,17 +61,19 @@ export default function Certificates() {
       {/* Certificates */}
       <div className="mt-10 grid gap-5 md:grid-cols-2">
         {certificates.map((certificate, index) => (
-          <Reveal key={certificate.title} delay={index * 150}>
+          <Reveal key={certificate.id} delay={index * 150}>
             <article className="group h-full overflow-hidden rounded-2xl border border-white/10 bg-[#080808]/70 transition duration-500 hover:border-white/20">
               {/* Certificate Preview */}
               <div className="relative aspect-[4/3] overflow-hidden border-b border-white/10 bg-[#050505]">
-                <Image
-                  src={certificate.image}
-                  alt={certificate.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover transition duration-700 group-hover:scale-[1.03]"
-                />
+                {certificate.image_url && (
+                  <Image
+                    src={certificate.image_url}
+                    alt={certificate.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition duration-700 group-hover:scale-[1.03]"
+                  />
+                )}
 
                 <div className="absolute inset-0 bg-black/10 transition duration-500 group-hover:bg-transparent" />
 
@@ -70,15 +84,18 @@ export default function Certificates() {
                 </div>
               </div>
 
-              {/* Information */}
+              {/* Content */}
               <div className="p-5 sm:p-6">
-                <div className="flex items-center justify-between gap-4">
-                  <p className="font-mono text-[11px] text-white/50">
-                    {certificate.provider}
-                    <span className="mx-2 text-white/20">•</span>
-                    {certificate.level}
-                  </p>
-                </div>
+                <p className="font-mono text-[11px] text-white/50">
+                  {certificate.provider}
+
+                  {certificate.year && (
+                    <>
+                      <span className="mx-2 text-white/20">•</span>
+                      {certificate.year}
+                    </>
+                  )}
+                </p>
 
                 <h3 className="mt-4 text-lg font-semibold leading-7 text-white">
                   {certificate.title}
@@ -93,9 +110,11 @@ export default function Certificates() {
                     {certificate.category}
                   </p>
 
-                  <span className="font-mono text-[11px] text-white/40">
-                    2025
-                  </span>
+                  {certificate.year && (
+                    <span className="font-mono text-[11px] text-white/40">
+                      {certificate.year}
+                    </span>
+                  )}
                 </div>
               </div>
             </article>

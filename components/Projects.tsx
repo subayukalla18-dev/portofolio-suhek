@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { IconType } from "react-icons";
 import Reveal from "@/components/Reveal";
+import { createClient } from "@/lib/supabase/server";
 
 import {
   SiReact,
@@ -20,6 +21,7 @@ type Tech = {
 };
 
 type Project = {
+  id: number;
   number: string;
   category: string;
   title: string;
@@ -29,72 +31,46 @@ type Project = {
   github: string;
 };
 
-const projects: Project[] = [
+const techConfig: Record<
+  string,
   {
-    number: "01",
-    category: "WEB APPLICATION",
-    title: "Internship Attendance System",
-    description:
-      "Web-based internship attendance system with GPS validation, WiFi verification, selfie attendance, and attendance monitoring for administrators.",
-    image: "/images/projects/attendance-system.png",
-    github:
-      "https://github.com/subayukalla18-dev/iconnet-internship-attendance",
-    tech: [
-      {
-        name: "React",
-        icon: SiReact,
-        color: "#61DAFB",
-      },
-      {
-        name: "NestJS",
-        icon: SiNestjs,
-        color: "#E0234E",
-      },
-      {
-        name: "Prisma",
-        icon: SiPrisma,
-        color: "#FFFFFF",
-      },
-      {
-        name: "PostgreSQL",
-        icon: SiPostgresql,
-        color: "#4169E1",
-      },
-    ],
+    icon: IconType;
+    color: string;
+  }
+> = {
+  React: {
+    icon: SiReact,
+    color: "#61DAFB",
   },
-  {
-    number: "02",
-    category: "PERSONAL PORTFOLIO",
-    title: "Subayu Kalla Portfolio",
-    description:
-      "Personal portfolio website showcasing projects, technical skills, education, experience, and professional certifications.",
-    image: "/images/projects/portfolio.png",
-    github:
-      "https://github.com/subayukalla18-dev/portofolio-suhek",
-    tech: [
-      {
-        name: "Next.js",
-        icon: SiNextdotjs,
-        color: "#FFFFFF",
-      },
-      {
-        name: "TypeScript",
-        icon: SiTypescript,
-        color: "#3178C6",
-      },
-      {
-        name: "Tailwind CSS",
-        icon: SiTailwindcss,
-        color: "#06B6D4",
-      },
-      {
-        name: "Supabase",
-        icon: SiSupabase,
-        color: "#3ECF8E",
-      },
-    ],
+  NestJS: {
+    icon: SiNestjs,
+    color: "#E0234E",
   },
-];
+  Prisma: {
+    icon: SiPrisma,
+    color: "#FFFFFF",
+  },
+  PostgreSQL: {
+    icon: SiPostgresql,
+    color: "#4169E1",
+  },
+  "Next.js": {
+    icon: SiNextdotjs,
+    color: "#FFFFFF",
+  },
+  TypeScript: {
+    icon: SiTypescript,
+    color: "#3178C6",
+  },
+  "Tailwind CSS": {
+    icon: SiTailwindcss,
+    color: "#06B6D4",
+  },
+  Supabase: {
+    icon: SiSupabase,
+    color: "#3ECF8E",
+  },
+};
 
 function TechBadge({ item }: { item: Tech }) {
   const Icon = item.icon;
@@ -113,7 +89,53 @@ function TechBadge({ item }: { item: Tech }) {
   );
 }
 
-export default function Projects() {
+export default async function Projects() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("projects")
+    .select(
+      "id, title, category, description, image_url, github_url, tech_stack, sort_order",
+    )
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+  console.error("FAILED TO FETCH PROJECTS");
+  console.error("message:", error.message);
+  console.error("details:", error.details);
+  console.error("hint:", error.hint);
+  console.error("code:", error.code);
+}
+
+  const projects: Project[] = (data ?? []).map((project, index) => {
+    const techNames = Array.isArray(project.tech_stack)
+      ? project.tech_stack
+      : [];
+
+    const tech: Tech[] = techNames
+      .filter(
+        (name): name is string =>
+          typeof name === "string" && Boolean(techConfig[name]),
+      )
+      .map((name) => ({
+        name,
+        icon: techConfig[name].icon,
+        color: techConfig[name].color,
+      }));
+
+    return {
+      id: project.id,
+      number: String(index + 1).padStart(2, "0"),
+      category: project.category ?? "",
+      title: project.title,
+      description: project.description ?? "",
+      image: project.image_url ?? "",
+      github: project.github_url ?? "#",
+      tech,
+    };
+  });
+
   return (
     <section
       id="work"
@@ -133,7 +155,7 @@ export default function Projects() {
           </div>
 
           <p className="hidden font-mono text-[11px] uppercase text-white/45 md:block">
-            02 PROJECTS
+            {String(projects.length).padStart(2, "0")} PROJECTS
           </p>
         </div>
       </Reveal>
@@ -141,17 +163,19 @@ export default function Projects() {
       {/* Projects */}
       <div className="mt-10 grid gap-5 lg:grid-cols-2">
         {projects.map((project, index) => (
-          <Reveal key={project.number} delay={index * 150}>
+          <Reveal key={project.id} delay={index * 150}>
             <article className="group overflow-hidden rounded-2xl border border-white/10 bg-[#080808]/80 transition-all duration-500 hover:border-white/20">
               {/* Project Preview */}
               <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-[#0b0b0b]">
-                <Image
-                  src={project.image}
-                  alt={project.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                />
+                {project.image && (
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                )}
 
                 <div className="absolute inset-0 bg-black/10 transition-colors duration-500 group-hover:bg-transparent" />
 
@@ -187,20 +211,22 @@ export default function Projects() {
                 </div>
 
                 {/* GitHub */}
-                <div className="mt-6">
-                  <a
-                    href={project.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group/github inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/50 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
-                  >
-                    <span>VIEW ON GITHUB</span>
+                {project.github !== "#" && (
+                  <div className="mt-6">
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group/github inline-flex items-center gap-2 rounded-full border border-white/10 px-3.5 py-1.5 text-[11px] text-white/50 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.05] hover:text-white"
+                    >
+                      <span>VIEW ON GITHUB</span>
 
-                    <span className="transition-transform duration-300 group-hover/github:translate-x-0.5 group-hover/github:-translate-y-0.5">
-                      ↗
-                    </span>
-                  </a>
-                </div>
+                      <span className="transition-transform duration-300 group-hover/github:translate-x-0.5 group-hover/github:-translate-y-0.5">
+                        ↗
+                      </span>
+                    </a>
+                  </div>
+                )}
               </div>
             </article>
           </Reveal>
