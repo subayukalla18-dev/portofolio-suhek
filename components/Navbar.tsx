@@ -75,7 +75,7 @@ export default function Navbar() {
             <span>GET IN TOUCH</span>
 
             <span className="inline-block transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-              ↗
+              ↗︎
             </span>
           </a>
 
@@ -142,7 +142,7 @@ export default function Navbar() {
                 <span>GET IN TOUCH</span>
 
                 <span className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                  ↗
+                  ↗︎
                 </span>
               </a>
             </div>

@@ -222,7 +222,7 @@ export default async function Projects() {
                       <span>VIEW ON GITHUB</span>
 
                       <span className="transition-transform duration-300 group-hover/github:translate-x-0.5 group-hover/github:-translate-y-0.5">
-                        ↗
+                        ↗︎
                       </span>
                     </a>
                   </div>
